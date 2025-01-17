@@ -3,7 +3,6 @@ on:
     branches:
       - main
       - master
-      - develop
   push:
     branches:
       - main
@@ -16,26 +15,20 @@ jobs:
     name: Build and deploy
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
+      - uses: actions/checkout@v1
+      - uses: actions/setup-java@v1
         with:
-          java-version: '12'
-      - uses: subosito/flutter-action@v2
+          java-version: '12.x'
+      - uses: subosito/flutter-action@v1
         with:
-          flutter-version: 'stable'
-      - name: Cache Flutter Dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-pub-cache-${{ hashFiles('pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-cache-
+          flutter-version: '2.0.0'
       - run: flutter pub get
       - run: flutter test
-      - run: flutter build apk --release --split-per-abi
+      - run: flutter build apk --debug --split-per-abi
       - name: Push to Releases
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/app/outputs/apk/release/*"
+          artifacts: "build/app/outputs/apk/debug/*"
           tag: v1.0.${{ github.run_number }}
           token: ${{ secrets.TOKEN }}
+       
